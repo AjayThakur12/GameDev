@@ -1,0 +1,154 @@
+<html>
+    <head>
+        <title>My First Game</title>
+        <meta name="viewport" content="width=device-width,user-scalable=no"/>
+    
+        
+    <style>
+        body{
+            background-color: black;
+        }
+     
+        #mycanvas{
+            border:5px solid white;
+            margin-left: 250px;
+        }
+        div{
+            font-size:40px;
+            color:white;
+            font-family: fantasy;
+              margin-left: 550px;
+            
+        }
+    </style>
+    </head>
+    <body>
+        <div>Pokemon Game</div>
+        <canvas id="mycanvas" width="800px" height="600px">
+        </canvas>
+    </body>
+    
+    <script>
+        var canvas = document.getElementById('mycanvas');
+        var ctx = canvas.getContext('2d');
+        ctx.fillStyle = "rgb(100,150,200)";
+        var GAME_HEIGHT = 600;
+        var GAME_WIDTH = 800;
+        var gameOver = false;
+        
+      var images = {};
+      images.player = new Image();
+      images.player.src = "Assets/pika.png";
+      
+      images.enemy = new Image();
+      images.enemy.src = "Assets/gengar.png";
+        
+      images.background = new Image();
+      images.background.src = "Assets/background.jpg";
+        
+      images.ball = new Image();
+      images.ball.src = "Assets/ball.png";
+        
+        
+        
+       var enemy = {
+            x:300,
+            y:100,
+            w: 80,
+            h:80,
+            speedY:4
+       };
+    
+       var player = {
+            x : 0,
+            y : GAME_HEIGHT/2 - 75,
+            w : 80,
+            h : 80,
+            speedX: 4,
+            isMoving:false,
+        };
+        
+        var goal = {
+            x : GAME_WIDTH-100,
+            y : GAME_HEIGHT/2 - 75,
+            w : 100,
+            h : 100
+        };
+        
+        canvas.addEventListener('mousedown',function(){
+            player.isMoving = true; 
+        });
+        canvas.addEventListener('mouseup',function(){
+            player.isMoving = false;
+        });
+        canvas.addEventListener('keydown',function(e){
+            console.log(e);
+            player.isMoving = false;
+        });
+        
+      var isColliding = function(r1,r2){
+          var firstCond = Math.abs(r1.x - r2.x) <=Math.abs(r1.w, r2.w);
+          var secondCond = Math.abs(r1.y - r2.y) <= Math.abs(r1.h, r1.h);
+          
+          if(firstCond&&secondCond){
+              return true;
+          }
+          else{
+              return false;
+          }
+           
+      }
+   
+    
+       var update = function(){
+           if(isColliding(player,enemy)){
+               alert("Game Over !");
+               gameOver = true;       
+           }
+           if(isColliding(player,goal)){
+               alert("Congrats");
+               console.log("You Won ");
+               gameOver = true;
+           }
+           //Update the position of enemy.
+           enemy.y = enemy.y + enemy.speedY;
+           if(enemy.y>=GAME_HEIGHT - enemy.h || enemy.y<=0){
+               enemy.speedY *= -1;
+           }
+           //Updae the position of player
+           if(player.isMoving==true){
+               player.x = player.x + player.speedX;
+           }
+       }
+       
+       var draw = function(){
+           ctx.clearRect(0,0,GAME_WIDTH,GAME_HEIGHT);
+           
+           //Draw the background
+           ctx.drawImage(images.background,0,0,GAME_WIDTH,GAME_HEIGHT);
+           
+           //Draw the enemy 
+           //ctx.fillRect(enemy.x,enemy.y,enemy.w,enemy.h);
+             ctx.drawImage(images.enemy,enemy.x,enemy.y,enemy.w,enemy.h);
+           
+           //Draw the player.
+           ctx.drawImage(images.player,player.x,player.y,player.w,player.h);
+           
+           //Draw the goal.
+           ctx.drawImage(images.ball,goal.x,goal.y,goal.w,goal.h);
+       }
+        
+        
+        var render = function(){
+            update();
+            draw();
+            //console.log("In Render");
+            if(gameOver==false)
+            {
+                window.requestAnimationFrame(render);
+            }
+            }
+        render();
+    
+    </script>
+</html>
